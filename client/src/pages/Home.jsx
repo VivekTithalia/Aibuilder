@@ -4,9 +4,13 @@ import Navbar from "../components/Navbar";
 import { auth, provider } from "../../firebase";
 import { signInWithPopup } from "firebase/auth";
 import api from "../api/baseapi";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../redux/userSlice";
+import toast from "react-hot-toast";
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.user);
 
   const features = [
     {
@@ -26,24 +30,27 @@ const Home = () => {
     },
   ];
 
-  const handlegoogleauth=async()=>{
+  const handlegoogleauth = async () => {
     try {
-      const result=await signInWithPopup(auth,provider);
+      const result = await signInWithPopup(auth, provider);
       const { data } = await api.post("/auth/google", {
         name: result.user.displayName,
         email: result.user.email,
         avatar: result.user.photoURL,
       });
+      dispatch(setUserData(data));
+
       console.log(data);
+      toast.success("Logged in successfully");
+      setIsModalOpen(false);
     } catch (error) {
       console.log(error);
+      toast.error("Failed to login");
+      setIsModalOpen(false);
     }
-
-  }
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-   
-
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="py-20 px-4">
@@ -58,17 +65,29 @@ const Home = () => {
               <span className="text-blue-600">with AI</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Generate modern websites instantly using simple prompts powered by AI. 
-              No coding required, just your imagination.
+              Generate modern websites instantly using simple prompts powered by
+              AI. No coding required, just your imagination.
             </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-blue-700 transition-colors"
-            >
-              Get Started
-            </motion.button>
+            {!userData && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsModalOpen(true)}
+                className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-blue-700 transition-colors"
+              >
+                Get Started
+              </motion.button>
+            )}
+
+            {userData && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-blue-700 transition-colors"
+              >
+                Go to Dashboard
+              </motion.button>
+            )}
           </motion.div>
         </section>
 
@@ -133,8 +152,18 @@ const Home = () => {
                 onClick={() => setIsModalOpen(false)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
 
