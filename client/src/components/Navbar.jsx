@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import api from "../api/baseapi";
 import { clearUserData } from "../redux/userSlice";
 import toast from "react-hot-toast";
+import { Coins } from "lucide-react";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -99,6 +101,14 @@ const Navbar = () => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
+            {userData && (
+              <div className="  p-1 w-24 h-9 shadow-md border-[1.12px]  rounded-lg flex items-center gap-2">
+                <Coins className="" /> {""}
+                <span className=" font-semibold text-xl">
+                  {userData.credits}
+                </span>
+              </div>
+            )}
             {/* User Avatar + Dropdown */}
             {userData && (
               <div className="relative" ref={userMenuRef}>
