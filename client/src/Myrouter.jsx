@@ -6,9 +6,18 @@ import Generatepage from "./pages/Genearate";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = () => {
-  const { userData } = useSelector((state) => state.user);
+  const { userData, isLoading } = useSelector((state) => state.user);
 
-  // If not logged in, send user back to home
+  // While we are checking the current user, avoid redirecting.
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="h-8 w-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // If not logged in (and not loading), send user back to home
   if (!userData) {
     return <Navigate to="/" replace />;
   }
