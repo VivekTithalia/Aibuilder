@@ -7,6 +7,7 @@ import api from "../api/baseapi";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 import toast from "react-hot-toast";
+import { Link } from "react-router";
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
@@ -85,7 +86,7 @@ const Home = () => {
                 whileTap={{ scale: 0.95 }}
                 className="bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-blue-700 transition-colors"
               >
-                Go to Dashboard
+                <Link to="dashboard"> Go to Dashboard</Link>
               </motion.button>
             )}
           </motion.div>

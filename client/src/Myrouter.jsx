@@ -1,19 +1,43 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
 import App from "./App";
+import Dashboard from "./pages/Dashboard";
+import Generatepage from "./pages/Genearate";
+import { useSelector } from "react-redux";
+
+const ProtectedRoute = () => {
+  const { userData } = useSelector((state) => state.user);
+
+  // If not logged in, send user back to home
+  if (!userData) {
+    return <Navigate to="/" replace />;
+  }
+
+  // If logged in, render the nested protected routes
+  return <Outlet />;
+};
+
 const router = createBrowserRouter([
-   {
+  {
     path: "/",
-    element: <App />,  // layout
+    element: <App />, // layout
     children: [
       {
         index: true,
         element: <Home />,
       },
       {
-        path: "about",
-        element: <About />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "generate",
+            element: <Generatepage />,
+          },
+        ],
       },
     ],
   },
