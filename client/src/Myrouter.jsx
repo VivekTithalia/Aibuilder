@@ -4,6 +4,7 @@ import App from "./App";
 import Dashboard from "./pages/Dashboard";
 import Generatepage from "./pages/Genearate";
 import { useSelector } from "react-redux";
+import Editor from "./pages/Editor";
 
 const ProtectedRoute = () => {
   const { userData, isLoading } = useSelector((state) => state.user);
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
           {
             path: "generate",
             element: <Generatepage />,
+          },
+          {
+            path: `editor/:id`,
+            element: <Editor />,
           },
         ],
       },

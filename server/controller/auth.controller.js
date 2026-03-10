@@ -1,3 +1,4 @@
+import { generateresponse } from "../config/open.router.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
@@ -54,5 +55,21 @@ export const getCurrentUser = async (req, res) => {
   } catch (error) {
     console.log("error in getCurrentUser", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const generatedemo = async (req, res) => {
+  try {
+    const result = await generateresponse("hello");
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("generatedemo error:", error.message, error.body || "");
+    const status = error.status || 500;
+    const message =
+      error.message || "Failed to generate response from AI service";
+    return res.status(status).json({
+      ok: false,
+      message: status === 500 ? "Internal server error" : message,
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };

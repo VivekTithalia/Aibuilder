@@ -4,6 +4,7 @@ import Connectdb from "./config/connection.js";
 import authroutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import websiteroute from "./routes/website.route.js";
 
 const app = express();
 env.config();
@@ -21,6 +22,7 @@ app.use(
 
 //routes
 app.use("/api/auth", authroutes);
+app.use("/api/website", websiteroute);
 app.listen(port, () => {
   Connectdb();
   console.log(`server runing on the port number ${port}`);

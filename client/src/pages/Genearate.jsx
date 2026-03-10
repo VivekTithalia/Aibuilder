@@ -1,6 +1,41 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
+import api from "../api/baseapi";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const Generatepage = () => {
+  const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.user);
+  const handleGenerate = async () => {
+    if (!prompt.trim()) {
+      alert("Please enter a description");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await api.post("/website/genwebsite", {
+        prompt: prompt,
+      });
+
+      console.log(res.data);
+      if (res.data.remainingCredits !== undefined) {
+        dispatch(setUserData({ ...userData, credits: res.data.remainingCredits }));
+      }
+      navigate(`/editor/${res.data.website._id}`);
+      // later we will redirect to preview page
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-3xl">
@@ -46,6 +81,8 @@ const Generatepage = () => {
             <textarea
               id="website-description"
               rows={8}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe the website you want to build in detail. For example: a modern landing page for a SaaS product with pricing section, testimonials, FAQ, dark header, and call-to-action buttons..."
               className="w-full rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 sm:py-4 text-sm sm:text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none shadow-inner"
             />
@@ -61,9 +98,11 @@ const Generatepage = () => {
               whileHover={{ scale: 1.03, y: -1 }}
               whileTap={{ scale: 0.97, y: 0 }}
               type="button"
+              onClick={handleGenerate}
+              disabled={loading}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-6 sm:px-8 py-3 text-sm sm:text-base font-semibold text-white shadow-lg hover:bg-blue-700 transition-colors"
             >
-              <span>Generate Website</span>
+              <span> {loading ? "Generating..." : "Generate Website"}</span>
             </motion.button>
           </motion.div>
         </motion.div>

@@ -1,12 +1,16 @@
 const OpenrouterUrl = "https://openrouter.ai/api/v1/chat/completions";
-const OpenrouterApiKey = process.env.OPEN_ROUTER_API_KEY;
-const model = "deepseek/deepseek-chat";
+const model = "openrouter/free";
 
-const generateresponse = async (prompt) => {
+export const generateresponse = async (prompt) => {
+  const apiKey = process.env.OPEN_ROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPEN_ROUTER_API_KEY is not set in .env");
+  }
+
   const res = await fetch(OpenrouterUrl, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -24,9 +28,12 @@ const generateresponse = async (prompt) => {
     }),
   });
   if (!res.ok) {
-    const eror = await res.text();
-    throw new Error("open router error", eror);
+    const errorBody = await res.text();
+    const err = new Error(`OpenRouter API error (${res.status}): ${errorBody}`);
+    err.status = res.status;
+    err.body = errorBody;
+    throw err;
   }
   const data = await res.json();
-  return data;
+  return data.choices[0]?.message?.content ?? "";
 };
